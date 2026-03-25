@@ -40,6 +40,11 @@ export default function Tasks() {
       });
 
       console.log(await res.text());
+      await loadTasks();
+      setTitle('');
+      setDescription('');
+      setPriority('medium');
+      setDueDate('');
     } catch (err) {
       console.error('FETCH ERROR:', err);
     }
@@ -91,12 +96,6 @@ export default function Tasks() {
       method: 'DELETE'
     });
     loadTasks();
-  };
-
-  // 📅 overdue check
-  const isOverdue = (date) => {
-    if (!date) return false;
-    return new Date(date) < new Date();
   };
 
   const columns = {
@@ -180,10 +179,10 @@ export default function Tasks() {
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="p-4 rounded-3xl backdrop-blur-2xl bg-white/20 border border-white/20 shadow-xl min-h-[300px]"
+                  className="p-4 rounded-3xl bg-white/20 border border-white/20 shadow-xl min-h-[300px]"
                 >
                   <h2 className="font-bold mb-3 capitalize text-lg">
-                    {key} 
+                    {key}
                   </h2>
 
                   {items.map((task, index) => (
@@ -192,13 +191,17 @@ export default function Tasks() {
                       draggableId={task.id.toString()}
                       index={index}
                     >
-                      {(provided) => (
+                      {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="relative mb-3 p-4 rounded-2xl backdrop-blur-xl bg-white/40 border border-white/20 shadow-lg hover:scale-105 transition"
-                        >
+                          style={provided.draggableProps.style}
+                          className={`relative mb-3 p-4 rounded-2xl border border-white/20 shadow-lg transition
+                            ${snapshot.isDragging
+                              ? 'bg-white z-50 scale-100'
+                              : 'backdrop-blur-xl bg-white/40 hover:scale-105'}
+                          `}>
                           {/* shine */}
                           <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-2xl pointer-events-none"></div>
 
@@ -259,7 +262,7 @@ export default function Tasks() {
             <h2 className="font-bold mb-4 text-lg">Edit Task</h2>
 
             <input
-              className="w-full mb-2 p-2 rounded bg-white/70"
+              className="w-full mb-2 p-2 rounded-xl bg-white/70"
               value={selectedTask.title}
               onChange={e =>
                 setSelectedTask({ ...selectedTask, title: e.target.value })
@@ -267,12 +270,35 @@ export default function Tasks() {
             />
 
             <input
-              className="w-full mb-2 p-2 rounded bg-white/70"
+              className="w-full mb-2 p-2 rounded-xl bg-white/70"
               value={selectedTask.description || ''}
               onChange={e =>
                 setSelectedTask({ ...selectedTask, description: e.target.value })
               }
             />
+
+            <div className="flex gap-2 mb-2">
+              <select
+                className="w-1/2 p-2 rounded-xl bg-white/60 border border-white/30"
+                value={selectedTask.priority}
+                onChange={e =>
+                  setSelectedTask({ ...selectedTask, priority: e.target.value })
+                }
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+
+              <input
+                type="date"
+                className="w-1/2 p-2 rounded-xl bg-white/60 border border-white/30"
+                value={selectedTask.due_date || ''}
+                onChange={e =>
+                  setSelectedTask({ ...selectedTask, due_date: e.target.value })
+                }
+              />
+            </div>
 
             <div className="flex justify-end gap-2 mt-4">
               <button
