@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🌈 Smooth + glass feel */
+* {
+  transition: all 0.25s ease;
+}
+
+/* 🫧 Glass card */
+.glass {
+  @apply bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-white/30 shadow-lg;
+}
+
+body {
+  background: linear-gradient(135deg, #ffd6ec, #d6f0ff, #f3d6ff);
+}
