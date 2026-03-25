@@ -1,0 +1,247 @@
+const express = require('express');
+const mysql = require('mysql2');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// ===== DB CONNECT =====
+const db = mysql.createConnection({
+  // host: 'mysql',
+  host: 'localhost',
+  port: 3307,
+  user: 'root',
+  password: 'root',
+  database: 'life_tracker'
+});
+
+db.connect(err => {
+  if (err) {
+    console.log('DB Error:', err);
+  } else {
+    console.log('MySQL Connected');
+  }
+});
+
+// =======================
+// ===== TASK API ========
+// =======================
+
+// GET ALL TASKS
+app.get('/tasks', (req, res) => {
+  db.query('SELECT * FROM tasks ORDER BY created_at DESC', (err, result) => {
+    if (err) {
+      console.error(err); // 👈 ดูตรงนี้ใน terminal
+      return res.status(500).json(err);
+    }
+    res.json(result);
+  });
+});
+
+// GET TASK BY ID
+app.get('/tasks/:id', (req, res) => {
+  db.query('SELECT * FROM tasks WHERE id=?', [req.params.id], (err, result) => {
+    if (err) {
+      console.log('DB ERROR:', err);
+      return res.status(500).json(err); // 👈 สำคัญ
+    }
+    res.json(result[0]);
+  });
+});
+
+// CREATE TASK
+app.post('/tasks', (req, res) => {
+  const { title, description, priority, due_date } = req.body;
+
+  db.query(
+    `INSERT INTO tasks (title, description, priority, due_date, status)
+     VALUES (?, ?, ?, ?, 'todo')`,
+    [title, description || null, priority || 'medium', due_date || null],
+    (err) => {
+      if (err) {
+        console.log('DB ERROR:', err);
+        return res.status(500).json(err); // 👈 สำคัญ
+      }
+      res.json({ message: 'Task created' });
+    }
+  );
+});
+
+// UPDATE TASK
+app.put('/tasks/:id', (req, res) => {
+  const { title, description, status, priority, due_date } = req.body;
+
+  db.query(
+    `UPDATE tasks 
+     SET title=?, description=?, status=?, priority=?, due_date=? 
+     WHERE id=?`,
+    [title, description, status, priority, due_date, req.params.id],
+    (err) => {
+      if (err) {
+        console.error(err); // 👈 ดูตรงนี้ใน terminal
+        return res.status(500).json(err);
+      }
+      res.json({ message: 'Task updated' });
+    }
+  );
+});
+
+// DELETE TASK
+app.delete('/tasks/:id', (req, res) => {
+  db.query('DELETE FROM tasks WHERE id=?', [req.params.id], (err) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: 'Task deleted' });
+  });
+});
+
+
+// =======================
+// ===== BUG API =========
+// =======================
+
+// GET ALL BUGS
+app.get('/bugs', (req, res) => {
+  db.query('SELECT * FROM bugs ORDER BY created_at DESC', (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json(result);
+  });
+});
+
+// GET BUG BY ID
+app.get('/bugs/:id', (req, res) => {
+  db.query('SELECT * FROM bugs WHERE id=?', [req.params.id], (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json(result[0]);
+  });
+});
+
+// CREATE BUG
+app.post('/bugs', (req, res) => {
+  const { title, description, priority } = req.body;
+
+  db.query(
+    `INSERT INTO bugs (title, description, priority, status)
+     VALUES (?, ?, ?, 'open')`,
+    [title, description || null, priority || 'medium'],
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ message: 'Bug created' });
+    }
+  );
+});
+
+// UPDATE BUG
+app.put('/bugs/:id', (req, res) => {
+  const { title, description, status, priority, solution } = req.body;
+
+  db.query(
+    `UPDATE bugs 
+     SET title=?, description=?, status=?, priority=?, solution=? 
+     WHERE id=?`,
+    [title, description, status, priority, solution, req.params.id],
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ message: 'Bug updated' });
+    }
+  );
+});
+
+// DELETE BUG
+app.delete('/bugs/:id', (req, res) => {
+  db.query('DELETE FROM bugs WHERE id=?', [req.params.id], (err) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: 'Bug deleted' });
+  });
+});
+
+
+// =======================
+// ===== NOTES API =======
+// =======================
+
+// GET NOTES
+app.get('/notes', (req, res) => {
+  db.query('SELECT * FROM notes ORDER BY is_pinned DESC, created_at DESC', (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json(result);
+  });
+});
+
+// CREATE NOTE
+app.post('/notes', (req, res) => {
+  const { title, content } = req.body;
+
+  db.query(
+    'INSERT INTO notes (title, content) VALUES (?, ?)',
+    [title, content],
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ message: 'Note created' });
+    }
+  );
+});
+
+// UPDATE NOTE
+app.put('/notes/:id', (req, res) => {
+  const { title, content, is_pinned } = req.body;
+
+  db.query(
+    'UPDATE notes SET title=?, content=?, is_pinned=? WHERE id=?',
+    [title, content, is_pinned, req.params.id],
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ message: 'Note updated' });
+    }
+  );
+});
+
+// DELETE NOTE
+app.delete('/notes/:id', (req, res) => {
+  db.query('DELETE FROM notes WHERE id=?', [req.params.id], (err) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: 'Note deleted' });
+  });
+});
+
+
+// =======================
+// ===== LINKS API =======
+// =======================
+
+// GET LINKS
+app.get('/links', (req, res) => {
+  db.query('SELECT * FROM links ORDER BY created_at DESC', (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.json(result);
+  });
+});
+
+// CREATE LINK
+app.post('/links', (req, res) => {
+  const { name, url } = req.body;
+
+  db.query(
+    'INSERT INTO links (name, url) VALUES (?, ?)',
+    [name, url],
+    (err) => {
+      if (err) return res.status(500).json(err);
+      res.json({ message: 'Link added' });
+    }
+  );
+});
+
+// DELETE LINK
+app.delete('/links/:id', (req, res) => {
+  db.query('DELETE FROM links WHERE id=?', [req.params.id], (err) => {
+    if (err) return res.status(500).json(err);
+    res.json({ message: 'Link deleted' });
+  });
+});
+
+
+// =======================
+
+app.listen(5000, () => {
+  console.log('🚀 Server running on http://localhost:5000');
+});
