@@ -116,19 +116,43 @@ app.get('/bugs/:id', (req, res) => {
   });
 });
 
-// CREATE BUG
-app.post('/bugs', (req, res) => {
-  const { title, description, priority } = req.body;
+// GET LOGS
+app.get('/bugs/:id/logs', (req, res) => {
+  const bugId = req.params.id;
 
   db.query(
-    `INSERT INTO bugs (title, description, priority, status)
-     VALUES (?, ?, ?, 'open')`,
-    [title, description || null, priority || 'medium'],
-    (err) => {
+    `SELECT * FROM bug_logs WHERE bug_id = ? ORDER BY created_at DESC`,
+    [bugId],
+    (err, result) => {
       if (err) return res.status(500).json(err);
-      res.json({ message: 'Bug created' });
+      res.json(result);
     }
   );
+});
+
+// CREATE BUG
+app.post('/bugs', (req, res) => {
+  const { title, description, status, priority, solution } = req.body;
+
+  const sql = `
+    INSERT INTO bugs (title, description, status, priority, solution)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [title, description, status, priority, solution], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    const bugId = result.insertId;
+
+    // log
+    db.query(
+      `INSERT INTO bug_logs (bug_id, action, note)
+       VALUES (?, 'create', 'Bug created')`,
+      [bugId]
+    );
+
+    res.json({ message: 'Bug added' });
+  });
 });
 
 // UPDATE BUG
@@ -142,6 +166,11 @@ app.put('/bugs/:id', (req, res) => {
     [title, description, status, priority, solution, req.params.id],
     (err) => {
       if (err) return res.status(500).json(err);
+      db.query(
+        `INSERT INTO bug_logs (bug_id, action, note)
+         VALUES (?, ?, ?)`,
+        [req.params.id, `${status}`, solution]
+      );
       res.json({ message: 'Bug updated' });
     }
   );
