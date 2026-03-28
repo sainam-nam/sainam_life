@@ -191,7 +191,7 @@ app.delete('/bugs/:id', (req, res) => {
 
 // GET NOTES
 app.get('/notes', (req, res) => {
-  db.query('SELECT * FROM notes ORDER BY is_pinned DESC, created_at DESC', (err, result) => {
+  db.query('SELECT * FROM notes ORDER BY is_pinned DESC, position ASC, created_at DESC', (err, result) => {
     if (err) return res.status(500).json(err);
     res.json(result);
   });
@@ -212,7 +212,7 @@ app.post('/notes', (req, res) => {
 });
 
 // UPDATE NOTE
-app.put('/notes/:id', (req, res) => {
+app.put('/note/:id', (req, res) => {
   const { title, content, is_pinned } = req.body;
 
   db.query(
@@ -223,6 +223,37 @@ app.put('/notes/:id', (req, res) => {
       res.json({ message: 'Note updated' });
     }
   );
+});
+
+//UPDATE POSITION
+app.put('/notes/reorder', (req, res) => {
+  const { notes } = req.body;
+  if (!notes || !Array.isArray(notes)) {
+    return res.status(400).json({ error: 'Invalid data' });
+  }
+  let count = 0;
+  let hasError = false;
+
+  notes.forEach(n => {
+    db.query(
+      'UPDATE notes SET `position`=? WHERE id=?',
+      [n.position, n.id],
+      (err) => {
+        if (hasError) return; // 🛑 กันยิงซ้ำ
+
+        if (err) {
+          hasError = true;
+          return res.status(500).json(err);
+        }
+
+        count++;
+
+        if (count === notes.length) {
+          res.json({ message: 'reordered' });
+        }
+      }
+    );
+  });
 });
 
 // DELETE NOTE

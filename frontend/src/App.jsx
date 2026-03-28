@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Tasks from './pages/Tasks';
 import Bugs from './pages/Bugs';
+import NotesSidebar from './component/Note';
+import { ArrowBigRightDash, NotebookText } from 'lucide-react';
 
 export default function App() {
   const [dark, setDark] = useState(() => {
@@ -8,6 +10,7 @@ export default function App() {
   });
 
   const [page, setPage] = useState('tasks');
+  const [showNotes, setShowNotes] = useState(false);
 
   // dashboard data
   const [stats, setStats] = useState({
@@ -146,6 +149,28 @@ export default function App() {
         {page === 'tasks' && <Tasks />}
         {page === 'bugs' && <Bugs />}
       </div>
+      <button
+        onClick={() => setShowNotes(!showNotes)}
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 
+             bg-yellow-400 text-white px-3 py-2 rounded-l-xl shadow-lg 
+             hover:scale-105 transition"
+      >
+        {showNotes ? <ArrowBigRightDash /> : <NotebookText />}
+      </button>
+      {/* RIGHT SIDEBAR (NOTES) */}
+      <div
+        className={`transition-all duration-300 overflow-hidden
+        ${showNotes ? 'w-80 m-4 ml-0' : 'w-0'}
+      `}
+      >
+        <NotesSidebar />
+      </div>
+      {/* {showNotes && (
+        <div
+          onClick={() => setShowNotes(false)}
+          className="fixed inset-0 bg-black/20 z-30"
+        />
+      )} */}
     </div>
   );
 }
