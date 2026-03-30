@@ -130,21 +130,30 @@ export default function Tasks() {
 
         <div className="relative flex flex-wrap gap-2">
           <input
-            className="px-3 py-2 rounded-xl bg-white/60 backdrop-blur border border-white/30"
+            className="p-2 rounded-xl 
+              bg-white/60 dark:bg-gray-800/60 
+              text-gray-800 dark:text-white
+              backdrop-blur border border-gray/30 dark:border-gray-700"
             placeholder="Title"
             value={title}
             onChange={e => setTitle(e.target.value)}
           />
 
           <input
-            className="px-3 py-2 rounded-xl bg-white/60 backdrop-blur border border-white/30"
+            className="p-2 rounded-xl 
+              bg-white/60 dark:bg-gray-800/60 
+              text-gray-800 dark:text-white
+              backdrop-blur border border-gray/30 dark:border-gray-700"
             placeholder="Description"
             value={description}
             onChange={e => setDescription(e.target.value)}
           />
 
           <select
-            className="px-3 py-2 rounded-xl bg-white/60 border border-white/30"
+            className="p-2 rounded-xl 
+              bg-white/60 dark:bg-gray-800/60 
+              text-gray-800 dark:text-white
+              backdrop-blur border border-gray/30 dark:border-gray-700"
             value={priority}
             onChange={e => setPriority(e.target.value)}
           >
@@ -155,7 +164,10 @@ export default function Tasks() {
 
           <input
             type="date"
-            className="px-3 py-2 rounded-xl bg-white/60 border border-white/30"
+            className="p-2 rounded-xl 
+              bg-white/60 dark:bg-gray-800/60 
+              text-gray-800 dark:text-white
+              backdrop-blur border border-gray/30 dark:border-gray-700"
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
           />
@@ -262,7 +274,11 @@ export default function Tasks() {
             <h2 className="font-bold mb-4 text-lg">Edit Task</h2>
 
             <input
-              className="w-full mb-2 p-2 rounded-xl bg-white/70"
+              // className=" rounded-xl bg-white/70"
+              className="w-full mb-2 p-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedTask.title}
               onChange={e =>
                 setSelectedTask({ ...selectedTask, title: e.target.value })
@@ -293,7 +309,7 @@ export default function Tasks() {
               <input
                 type="date"
                 className="w-1/2 p-2 rounded-xl bg-white/60 border border-white/30"
-                value={selectedTask.due_date || ''}
+                value={formatDate(selectedTask.due_date) || ''}
                 onChange={e =>
                   setSelectedTask({ ...selectedTask, due_date: e.target.value })
                 }
