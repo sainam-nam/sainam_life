@@ -64,6 +64,7 @@ export default function Bugs() {
 
     loadBugs();
     loadLogs(selectedBug.id);
+    setSelectedBug(null);
   };
 
   // ================= DELETE =================
@@ -105,21 +106,30 @@ export default function Bugs() {
         <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent rounded-3xl pointer-events-none"></div>
           <div className="relative flex flex-wrap gap-2">
             <input
-              className="px-3 py-2 rounded-xl bg-white/60 backdrop-blur border border-white/30"
+              className="p-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-gray/30 dark:border-gray-700"
               placeholder="Title"
               value={form.title}
               onChange={e => setForm({ ...form, title: e.target.value })}
             />
 
             <input
-              className="px-3 py-2 rounded-xl bg-white/60 backdrop-blur border border-white/30"
+              className="p-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-gray/30 dark:border-gray-700"
               placeholder="Description"
               value={form.description}
               onChange={e => setForm({ ...form, description: e.target.value })}
             />
 
             <select
-              className="px-3 py-2 rounded-xl bg-white/60 border border-white/30"
+              className="p-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-gray/30 dark:border-gray-700"
               value={form.priority}
               onChange={e => setForm({ ...form, priority: e.target.value })}
             >
@@ -191,7 +201,7 @@ export default function Bugs() {
                               }}
                               className="text-xs px-2 py-1 rounded bg-blue-400 text-white"
                             >
-                              View
+                              Edit
                             </button>
 
                             <button
@@ -224,7 +234,10 @@ export default function Bugs() {
 
             {/* TITLE */}
             <input
-              className="w-full mb-2 p-2 rounded"
+              className="w-full mb-2 p-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.title}
               onChange={e =>
                 setSelectedBug({ ...selectedBug, title: e.target.value })
@@ -233,16 +246,22 @@ export default function Bugs() {
 
             {/* DESCRIPTION */}
             <input
-              className="w-full mb-2 p-2 rounded"
+              className="w-full mb-2 p-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.description || ''}
               onChange={e =>
                 setSelectedBug({ ...selectedBug, description: e.target.value })
               }
             />
-
+          <div className="flex gap-2 mb-2">
             {/* PRIORITY */}
             <select
-              className="w-full mb-2 p-2 rounded"
+              className="w-1/2 px-3 py-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.priority}
               onChange={e =>
                 setSelectedBug({ ...selectedBug, priority: e.target.value })
@@ -255,7 +274,10 @@ export default function Bugs() {
 
             {/* STATUS */}
             <select
-              className="w-full mb-2 p-2 rounded"
+              className="w-1/2 px-3 py-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                border border-white/30 dark:border-gray-700"
               value={selectedBug.status}
               onChange={e =>
                 setSelectedBug({ ...selectedBug, status: e.target.value })
@@ -265,11 +287,14 @@ export default function Bugs() {
               <option value="in_progress">In Progress</option>
               <option value="fixed">Fixed</option>
             </select>
-
+          </div>
             {/* SOLUTION */}
             <h4 className="mt-3">Solution</h4>
             <input
-              className="w-full p-2 rounded"
+              className="w-full p-2 rounded-xl 
+                bg-white/60 dark:bg-gray-800/60 
+                text-gray-800 dark:text-white
+                backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.solution || ''}
               onChange={e =>
                 setSelectedBug({ ...selectedBug, solution: e.target.value })
