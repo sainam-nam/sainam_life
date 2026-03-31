@@ -19,22 +19,11 @@
 - Styling: Tailwind CSS
 - Backend: Node.js / Express / MySQL
 
-## การใช้งาน
-```bash
-# install dependencies
-npm install
-
-# run project
-npm run dev
-
-หรือถ้าใช้ yarn:
-
-yarn
-yarn dev
-```
-
 📌 หมายเหตุ
 โปรเจคนี้เป็นเพียงโปรเจคสำหรับการเรียนรู้และทดลองเท่านั้น อาจมีโค้ดที่ยังไม่สมบูรณ์ หรือไม่ได้ optimize สำหรับการใช้งานจริง
+
+## Testing (Playwright)
+โปรเจคนี้มีการทดลองใช้ automated testing เบื้องต้น โดยใช้ Playwright เพื่อทดสอบการทำงานของระบบในมุมมองของผู้ใช้งานจริง (End-to-End Testing)
 
 Author
 Sainatee Saeyang
