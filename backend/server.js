@@ -134,46 +134,75 @@ app.get('/bugs/:id/logs', (req, res) => {
 app.post('/bugs', (req, res) => {
   const { title, description, status, priority, solution } = req.body;
 
-  const sql = `
-    INSERT INTO bugs (title, description, status, priority, solution)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-
-  db.query(sql, [title, description, status, priority, solution], (err, result) => {
+  db.beginTransaction(err => {
     if (err) return res.status(500).json(err);
 
-    const bugId = result.insertId;
+    const sql = `
+      INSERT INTO bugs (title, description, status, priority, solution)
+      VALUES (?, ?, ?, ?, ?)
+    `;
 
-    // log
-    db.query(
-      `INSERT INTO bug_logs (bug_id, action, note)
-       VALUES (?, 'create', 'Bug created')`,
-      [bugId]
-    );
+    db.query(sql, [title, description, status, priority, solution], (err, result) => {
+      if (err) return db.rollback(() => res.status(500).json(err));
 
-    res.json({ message: 'Bug added' });
+      const bugId = result.insertId;
+
+      db.query(
+        `INSERT INTO bug_logs (bug_id, action, note)
+         VALUES (?, 'create', 'Bug created')`,
+        [bugId],
+        (err) => {
+          if (err) return db.rollback(() => res.status(500).json(err));
+
+          db.commit(err => {
+            if (err) return db.rollback(() => res.status(500).json(err));
+            res.json({ message: 'Bug added', id: bugId });
+          });
+        }
+      );
+    });
   });
 });
 
 // UPDATE BUG
 app.put('/bugs/:id', (req, res) => {
   const { title, description, status, priority, solution } = req.body;
+  const bugId = req.params.id;
 
-  db.query(
-    `UPDATE bugs 
-     SET title=?, description=?, status=?, priority=?, solution=? 
-     WHERE id=?`,
-    [title, description, status, priority, solution, req.params.id],
-    (err) => {
-      if (err) return res.status(500).json(err);
-      db.query(
-        `INSERT INTO bug_logs (bug_id, action, note)
-         VALUES (?, ?, ?)`,
-        [req.params.id, `${status}`, solution]
-      );
-      res.json({ message: 'Bug updated' });
-    }
-  );
+  db.beginTransaction(err => {
+    if (err) return res.status(500).json(err);
+
+    db.query(
+      `UPDATE bugs 
+       SET title=?, description=?, status=?, priority=?, solution=? 
+       WHERE id=?`,
+      [title, description, status, priority, solution, bugId],
+      (err, result) => {
+        if (err) return db.rollback(() => res.status(500).json(err));
+
+        // ✅ เช็คว่ามี row ถูก update จริง
+        if (result.affectedRows === 0) {
+          return db.rollback(() =>
+            res.status(404).json({ error: 'Bug not found' })
+          );
+        }
+
+        db.query(
+          `INSERT INTO bug_logs (bug_id, action, note)
+           VALUES (?, ?, ?)`,
+          [bugId, status, solution],
+          (err) => {
+            if (err) return db.rollback(() => res.status(500).json(err));
+
+            db.commit(err => {
+              if (err) return db.rollback(() => res.status(500).json(err));
+              res.json({ message: 'Bug updated' });
+            });
+          }
+        );
+      }
+    );
+  });
 });
 
 // DELETE BUG

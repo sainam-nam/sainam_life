@@ -123,13 +123,14 @@ export default function Tasks() {
     <div className="space-y-6">
 
       {/* FORM */}
-      <div className="relative p-5 rounded-3xl backdrop-blur-2xl bg-white/30 border border-white/20 shadow-xl">
+      <div data-testid="task-form" className="relative p-5 rounded-3xl backdrop-blur-2xl bg-white/30 border border-white/20 shadow-xl">
 
         {/* highlight layer */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent rounded-3xl pointer-events-none"></div>
 
         <div className="relative flex flex-wrap gap-2">
           <input
+            data-testid="new-task-title"
             className="p-2 rounded-xl 
               bg-white/60 dark:bg-gray-800/60 
               text-gray-800 dark:text-white
@@ -140,6 +141,7 @@ export default function Tasks() {
           />
 
           <input
+            data-testid="new-task-description"
             className="p-2 rounded-xl 
               bg-white/60 dark:bg-gray-800/60 
               text-gray-800 dark:text-white
@@ -150,6 +152,8 @@ export default function Tasks() {
           />
 
           <select
+            data-testid="new-task-priority"
+
             className="p-2 rounded-xl 
               bg-white/60 dark:bg-gray-800/60 
               text-gray-800 dark:text-white
@@ -163,6 +167,7 @@ export default function Tasks() {
           </select>
 
           <input
+            data-testid="new-task-due-date"
             type="date"
             className="p-2 rounded-xl 
               bg-white/60 dark:bg-gray-800/60 
@@ -173,6 +178,7 @@ export default function Tasks() {
           />
 
           <button
+            data-testid="add-task"
             onClick={addTask}
             className="px-4 rounded-xl bg-gradient-to-r from-pink-400 to-blue-400 text-white shadow hover:scale-105 transition"
           >
@@ -183,12 +189,13 @@ export default function Tasks() {
 
       {/* BOARD */}
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="grid grid-cols-3 gap-5">
+        <div data-testid="task-board" className="grid grid-cols-3 gap-5">
 
           {Object.entries(columns).map(([key, items]) => (
             <Droppable droppableId={key} key={key}>
               {(provided) => (
                 <div
+                  data-testid={`${key}-column`}
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   className="p-4 rounded-3xl bg-white/20 border border-white/20 shadow-xl min-h-[300px]"
@@ -205,6 +212,7 @@ export default function Tasks() {
                     >
                       {(provided, snapshot) => (
                         <div
+                          data-testid={`task-${task.id}`}
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
@@ -238,6 +246,7 @@ export default function Tasks() {
 
                             <div className="flex gap-2 mt-3">
                               <button
+                                data-testid={`edit-task-${task.id}`}
                                 onClick={() => setSelectedTask(task)}
                                 className="text-xs px-2 py-1 rounded bg-blue-400 text-white"
                               >
@@ -245,6 +254,7 @@ export default function Tasks() {
                               </button>
 
                               <button
+                                data-testid={`delete-task-${task.id}`}
                                 onClick={() => deleteTask(task.id)}
                                 className="text-xs px-2 py-1 rounded bg-pink-400 text-white"
                               >
@@ -267,14 +277,14 @@ export default function Tasks() {
 
       {/* MODAL */}
       {selectedTask && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div data-testid="edit-modal" className="fixed inset-0 bg-black/40 flex items-center justify-center">
 
           <div className="p-6 rounded-3xl backdrop-blur-2xl bg-white/40 border border-white/20 shadow-xl w-[400px]">
 
             <h2 className="font-bold mb-4 text-lg">Edit Task</h2>
 
             <input
-              // className=" rounded-xl bg-white/70"
+              data-testid="edit-task-title"
               className="w-full mb-2 p-2 rounded-xl 
                 bg-white/60 dark:bg-gray-800/60 
                 text-gray-800 dark:text-white
@@ -286,6 +296,7 @@ export default function Tasks() {
             />
 
             <input
+              data-testid="edit-task-description"
               className="w-full mb-2 p-2 rounded-xl bg-white/70"
               value={selectedTask.description || ''}
               onChange={e =>
@@ -295,6 +306,7 @@ export default function Tasks() {
 
             <div className="flex gap-2 mb-2">
               <select
+                data-testid="edit-task-priority"
                 className="w-1/2 p-2 rounded-xl bg-white/60 border border-white/30"
                 value={selectedTask.priority}
                 onChange={e =>
@@ -306,7 +318,8 @@ export default function Tasks() {
                 <option value="high">High</option>
               </select>
 
-              <input
+              <input  
+                data-testid="edit-task-due-date"
                 type="date"
                 className="w-1/2 p-2 rounded-xl bg-white/60 border border-white/30"
                 value={formatDate(selectedTask.due_date) || ''}
@@ -318,6 +331,7 @@ export default function Tasks() {
 
             <div className="flex justify-end gap-2 mt-4">
               <button
+                data-testid="cancel-edit-task"
                 onClick={() => setSelectedTask(null)}
                 className="px-3 py-1 rounded bg-gray-300"
               >
@@ -325,6 +339,7 @@ export default function Tasks() {
               </button>
 
               <button
+                data-testid="save-edit-task"
                 onClick={updateTask}
                 className="px-3 py-1 rounded bg-gradient-to-r from-pink-400 to-blue-400 text-white"
               >

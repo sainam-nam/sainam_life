@@ -239,6 +239,7 @@ export default function Bugs() {
                 text-gray-800 dark:text-white
                 backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.title}
+              placeholder="formTitle"
               onChange={e =>
                 setSelectedBug({ ...selectedBug, title: e.target.value })
               }
@@ -251,6 +252,7 @@ export default function Bugs() {
                 text-gray-800 dark:text-white
                 backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.description || ''}
+              placeholder="formDescription"
               onChange={e =>
                 setSelectedBug({ ...selectedBug, description: e.target.value })
               }
@@ -263,6 +265,7 @@ export default function Bugs() {
                 text-gray-800 dark:text-white
                 backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.priority}
+              placeholder="formPriority"
               onChange={e =>
                 setSelectedBug({ ...selectedBug, priority: e.target.value })
               }
@@ -279,6 +282,7 @@ export default function Bugs() {
                 text-gray-800 dark:text-white
                 border border-white/30 dark:border-gray-700"
               value={selectedBug.status}
+              placeholder="formStatus"
               onChange={e =>
                 setSelectedBug({ ...selectedBug, status: e.target.value })
               }
@@ -296,6 +300,7 @@ export default function Bugs() {
                 text-gray-800 dark:text-white
                 backdrop-blur border border-white/30 dark:border-gray-700"
               value={selectedBug.solution || ''}
+              placeholder="formSolution"
               onChange={e =>
                 setSelectedBug({ ...selectedBug, solution: e.target.value })
               }
